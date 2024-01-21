@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@1/css/pico.min.css">
+    <title>SpotifyStats</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3"></script>
+    <style>
+        .chart-container {
+            width: 80%;
+            margin: 20px auto;
+        }
+        .container-fluid {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .container-fluid ul {
+            display: flex;
+            list-style: none;
+            padding-left: 0;
+        }
+        .container-fluid ul li:not(:last-child) {
+            margin-right: 1rem;
+        }
+        .container-fluid ul.right {
+            margin-left: auto;
+        }
+    </style>
+</head>
+<body>
+    <nav class="container-fluid">
+        <ul class="left">
+            <li><strong>SpotifyStats</strong></li>
+        </ul>
+        <ul class="right">
+            <li><a href="/">Головна</a></li>
+            <li><a href="/logout" role="button">Вийти</a></li>
+        </ul>
+    </nav>
+    <main class="container">
+        <h1>Ваша музична статистика</h1>
+        <div class="chart-container">
+            <h2>Ваші 10 найкращих жанрів</h2>
+            <canvas id="genreChart" aria-label="Your Top Genres" role="img"></canvas>
+        </div>
+        <div class="chart-container">
+            <h2>Ваші 10 найкращих артистів</h2>
+            <canvas id="artistChart" aria-label="Your Top Artists" role="img"></canvas>
+        </div>
+        <div class="chart-container">
+            <h2>Ваші 10 найкращих треків</h2>
+            <canvas id="trackChart" aria-label="Your Top Tracks" role="img"></canvas>
+        </div>
+    </main>
+    <footer class="container">
+        <small>
+             <a href="{{ url_for('policy') }}">Політика конфіденційності</a>
+        </small>
+    </footer>
+
+    <script>
+        const genreCtx = document.getElementById('genreChart').getContext('2d');
+        const genreChart = new Chart(genreCtx, {
+            type: 'bar',
+            data: {
+                labels: {{ genre_names | tojson }},
+                datasets: [{
+                    label: 'Top Genres',
+                    data: {{ genre_counts | tojson }},
+                    backgroundColor: 'rgba(0, 123, 255, 0.5)',
+                    borderColor: 'rgba(0, 123, 255, 1)',
+                    borderWidth: 1
+                }]
+            },
+options: {
+    indexAxis: 'y',
+    scales: {
+        x: {
+            beginAtZero: true
+        }
+    },
+    plugins: {
+        legend: {
+            display: true,
+            position: 'top',
+        },
+        tooltip: {
+            callbacks: {
+                label: function(context) {
+                    let label = context.dataset.label || '';
+
+                    if (label) {
+                        label += ': ';
+                    }
+                    if (context.parsed.x !== null) {
+                        label += `Total count: ${context.parsed.x}`;
+                    }
+                    label += " (Це кількість разів, коли цей жанр/виконавець/трек з'являється у вашому топ-списку)";
+                    return label;
+                }
+            }
+        }
+    }
+}
+        });
+
+        const artistCtx = document.getElementById('artistChart').getContext('2d');
+        const artistChart = new Chart(artistCtx, {
+            type: 'bar',
+            data: {
+                labels: {{ artist_names | tojson }},
+                datasets: [{
+                    label: 'Top Artists',
+                    data: {{ artist_popularity | tojson }},
+                    backgroundColor: 'rgba(50, 205, 50, 0.5)',
+                    borderColor: 'rgba(50, 205, 50, 1)',
+                    borderWidth: 1
+                }]
+            },
+options: {
+    indexAxis: 'y',
+    scales: {
+        x: {
+            beginAtZero: true
+        }
+    },
+    plugins: {
+        legend: {
+            display: true,
+            position: 'top',
+        },
+        tooltip: {
+            callbacks: {
+                label: function(context) {
+                    let label = context.dataset.label || '';
+
+                    if (label) {
+                        label += ': ';
+                    }
+                    if (context.parsed.x !== null) {
+                        label += `Total count: ${context.parsed.x}`;
+                    }
+                    label += " (Це кількість разів, коли цей жанр/виконавець/трек з'являється у вашому топ-списку)";
+                    return label;
+                }
+            }
+        }
+    }
+}
+        });
+
+
+        const trackCtx = document.getElementById('trackChart').getContext('2d');
+    const trackChart = new Chart(trackCtx, {
+        type: 'bar',
+        data: {
+            labels: {{ track_names | tojson }},
+            datasets: [{
+                label: 'Top Tracks',
+                data: {{ track_play_counts | tojson }},
+                backgroundColor: 'rgba(255, 99, 132, 0.5)',
+                borderColor: 'rgba(255, 99, 132, 1)',
+                borderWidth: 1
+            }]
+        },
+options: {
+    indexAxis: 'y',
+    scales: {
+        x: {
+            beginAtZero: true
+        }
+    },
+    plugins: {
+        legend: {
+            display: true,
+            position: 'top',
+        },
+        tooltip: {
+            callbacks: {
+                label: function(context) {
+                    let label = context.dataset.label || '';
+
+                    if (label) {
+                        label += ': ';
+                    }
+                    if (context.parsed.x !== null) {
+                        label += `Total count: ${context.parsed.x}`;
+                    }
+                    label += " (Це кількість разів, коли цей жанр/виконавець/трек з'являється у вашому топ-списку)";
+                    return label;
+                }
+            }
+        }
+    }
+}
+
+    });
+    </script>
+
+</body>
+</html>

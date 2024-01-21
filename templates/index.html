@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@1/css/pico.min.css">
+    <title>SpotifyStats</title>
+</head>
+<body>
+<nav class="container-fluid">
+    <ul>
+        <li><strong>SpotifyStats</strong></li>
+    </ul>
+    <ul class="right">
+        {% if logged_in %}
+            <li><a href="{{ url_for('statistics') }}">Ваша статистика</a></li>
+            <li><a href="/logout" role="button">Вийти</a></li>
+        {% else %}
+            <li><a href="/login">Авторизувати Spotify</a></li>
+        {% endif %}
+    </ul>
+</nav>
+<main class="container">
+    <div class="grid">
+        <section>
+            <hgroup>
+                <h2>Ваші музичні переваги</h2>
+                <h3>Візуалізована статистика</h3>
+            </hgroup>
+            {% if logged_in %}
+            <p>Ласкаво просимо! Ви підключені до Spotify.</p>
+            {% else %}
+            <p>Підключіться до Spotify, щоб візуалізувати свої звички у слуханні музики та відкрити для себе нові жанри.</p>
+
+                        {% endif %}
+
+            <figure>
+                <img src="https://source.unsplash.com/featured/?music,graphs" alt="Графік музичних переваг"/>
+
+            </figure>
+        </section>
+    </div>
+    {% if logged_in and recently_played_tracks %}
+     <figcaption><a href="{{ url_for('statistics') }}">Дослідіть вашу статистику</a></figcaption>
+    <section>
+        <h2>Історія прослуховувань</h2>
+        <table>
+            <thead>
+            <tr>
+                <th>Назва</th>
+                <th>Виконавець</th>
+                <th>Альбом</th>
+                <th>Коли</th>
+                <th>Тривалість</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for track in recently_played_tracks %}
+            <tr>
+                <td>{{ track.title }}</td>
+                <td>{{ track.artist }}</td>
+                <td>{{ track.album }}</td>
+                <td>{{ track.played_at | dateformat }}</td>
+                <td>{{ track.duration | durationformat }}</td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </section>
+    {% endif %}
+</main>
+
+<footer class="container">
+    <small>
+        <a href="{{ url_for('policy') }}">Політика конфіденційності</a>
+    </small>
+</footer>
+</body>
+</html>
